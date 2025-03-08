@@ -50,5 +50,15 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  web:
+    container_name: web-server
+    build: ./node-js  # Points to the node-js folder
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./node-js/html:/app/html
+    depends_on:
+      - nakama
 volumes:
   data:

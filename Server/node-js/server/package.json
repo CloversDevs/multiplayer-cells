@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node server/server.ts"
+    "dev": "ts-node src/index.ts",
+    "compile": "tsc && node dist/index.js"
   },
   "keywords": [],
   "author": "",

@@ -74,3 +74,21 @@ window.addEventListener("resize", () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 });
+
+
+// Nakama connection
+import {Client} from "@heroiclabs/nakama-js";
+
+async function Connect()
+{
+    console.error("hello");
+    var useSSL = false; // Enable if server is run with an SSL certificate.
+    var client = new Client("defaultkey", "127.0.0.1", "7350", useSSL);
+    var email = "super@heroes.com";
+    var password = "batsignal";
+    console.error("almost there");
+    const session = await client.authenticateEmail(email, password);
+    console.info(session);
+}
+
+Connect();

@@ -4,20 +4,28 @@ FROM node:18-alpine
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json first for efficient caching
-COPY package.json package-lock.json ./
+# Install dependencies separately for server and client
+COPY server/package.json server/package-lock.json ./server/
+COPY client/package.json client/package-lock.json ./client/
 
-# Install dependencies
+# Install server dependencies
+WORKDIR /app/server
+RUN npm install
+
+# Install client dependencies
+WORKDIR /app/client
 RUN npm install
 
 # Copy the rest of the application files
+WORKDIR /app
 COPY . .
 
-# Compile TypeScript
-RUN npx tsc
+# Compile TypeScript for both server and client
+RUN cd server && npx tsc
+RUN cd client && npx tsc
 
 # Expose the port the server runs on
 EXPOSE 3000
 
 # Start the TypeScript server
-CMD ["npm", "run", "dev"]
+CMD ["node", "server/dist/index.js"]

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node src/index.ts",
-    "compile": "tsc && node dist/index.js"
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",

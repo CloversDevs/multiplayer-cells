@@ -21,8 +21,8 @@ WORKDIR /app
 COPY . .
 
 # Compile TypeScript for both server and client
-RUN cd server && npx tsc
-RUN cd client && npx tsc
+RUN cd server && npm run build
+RUN cd client && npm run build
 
 # Expose the port the server runs on
 EXPOSE 3000

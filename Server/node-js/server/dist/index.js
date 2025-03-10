@@ -11,4 +11,5 @@ const PORT = 3000;
 app.use(express_1.default.static(path_1.default.join(__dirname, "../../client/dist")));
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
+    console.log("Hi!");
 });

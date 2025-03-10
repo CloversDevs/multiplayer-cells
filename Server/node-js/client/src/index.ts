@@ -79,14 +79,18 @@ window.addEventListener("resize", () => {
 // Nakama connection
 import {Client} from "@heroiclabs/nakama-js";
 
+const NAKAMA_PUBLIC_KEY = "defaultkey";
+const NAKAMA_URL = window.location.hostname;
+const NAKAMA_PORT = "7350";
+const NAKAMA_USE_SSL = false;
+
 async function Connect()
 {
-    console.error("hello");
-    var useSSL = false; // Enable if server is run with an SSL certificate.
-    var client = new Client("defaultkey", "127.0.0.1", "7350", useSSL);
+    console.info("trying to connect to nakama");
+    var client = new Client(NAKAMA_PUBLIC_KEY, NAKAMA_URL, NAKAMA_PORT, NAKAMA_USE_SSL);
+    
     var email = "super@heroes.com";
     var password = "batsignal";
-    console.error("almost there");
     const session = await client.authenticateEmail(email, password);
     console.info(session);
 }

@@ -9,11 +9,14 @@ const circle = {
     y: canvas.height / 2,
     radius: 20,
     color: "red",
-    speed: 4
+    speed: 4,
+    text: "O"
 };
 
 let targetX = circle.x;
 let targetY = circle.y;
+let offsetX = 0;
+let offsetY = 0;
 
 // Prevent touch scrolling and pinch zooming
 document.addEventListener("touchmove", (event) => {
@@ -32,24 +35,27 @@ window.addEventListener("mousemove", (event) => {
 
 // Track touch movement (mobile support)
 canvas.addEventListener("touchmove", (event) => {
-    const touch = event.touches[0]; // Get first touch
+    const touch = event.touches[0];
     targetX = touch.clientX;
     targetY = touch.clientY;
 }, { passive: false });
 
 // Update and draw the game loop
 function update() {
-    // Calculate distance
     const dx = targetX - circle.x;
     const dy = targetY - circle.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    // Move towards the mouse
     if (distance > 1) {
         circle.x += (dx / distance) * circle.speed;
         circle.y += (dy / distance) * circle.speed;
     }
 
+    // Move grid based on circle movement
+    offsetX -= (dx / distance) * circle.speed * 0.2;
+    offsetY -= (dy / distance) * circle.speed * 0.2;
+
+    updatePopup();
     draw();
     requestAnimationFrame(update);
 }
@@ -57,6 +63,7 @@ function update() {
 // Draw function
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawGrid();
 
     // Draw the circle
     ctx.beginPath();
@@ -64,10 +71,34 @@ function draw() {
     ctx.fillStyle = circle.color;
     ctx.fill();
     ctx.closePath();
+
+    // Draw text inside the circle
+    ctx.fillStyle = "white";
+    ctx.font = "16px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(circle.text, circle.x, circle.y);
 }
 
-// Start the game loop
-update();
+// Draw grid function
+function drawGrid() {
+    const gridSize = 50;
+    ctx.strokeStyle = "lightgray";
+    ctx.lineWidth = 1;
+    
+    for (let x = (offsetX % gridSize) - gridSize; x < canvas.width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
+    for (let y = (offsetY % gridSize) - gridSize; y < canvas.height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+}
 
 // Resize canvas dynamically
 window.addEventListener("resize", () => {
@@ -75,24 +106,156 @@ window.addEventListener("resize", () => {
     canvas.height = window.innerHeight;
 });
 
+// Start the game loop
+update();
+
 
 // Nakama connection
-import {Client} from "@heroiclabs/nakama-js";
+import {Client, Friend, Match, Session, Socket} from "@heroiclabs/nakama-js";
 
 const NAKAMA_PUBLIC_KEY = "defaultkey";
 const NAKAMA_URL = window.location.hostname;
 const NAKAMA_PORT = "7350";
 const NAKAMA_USE_SSL = false;
 
+let session: Session = null;
+let client: Client = null;
+let socket:Socket = null;
+let match:Match = null;
+
+
+function generateRandomString(length: number): string {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+
+function getFromQuery(id:string): string | null {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(id);
+}
+
+class OpCodes {
+    static position = 1;
+    static vote = 2;
+}
+
+  
 async function Connect()
 {
     console.info("trying to connect to nakama");
-    var client = new Client(NAKAMA_PUBLIC_KEY, NAKAMA_URL, NAKAMA_PORT, NAKAMA_USE_SSL);
+    client = new Client(NAKAMA_PUBLIC_KEY, NAKAMA_URL, NAKAMA_PORT, NAKAMA_USE_SSL);
     
-    var email = "super@heroes.com";
-    var password = "batsignal";
-    const session = await client.authenticateEmail(email, password);
+    session = await client.authenticateDevice(generateRandomString(10));
     console.info(session);
+
+    console.info("trying to connect socket");
+    var appearOnline = true;
+    socket = client.createSocket();
+    await socket.connect(session, appearOnline);
+    console.info("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★");
+
+    socket.onmatchdata = (matchState) => {
+        const receivedData = new TextDecoder().decode(matchState.data);
+        console.log(`Received op code ${matchState.op_code}: ${receivedData}`);
+    };
+    //let matches = await client.listMatches(session);
+
+    const matchQuery = getFromQuery("match");
+    if(matchQuery)
+    {
+        console.info("☆★☆★ MATCH EXISTS ★☆★☆★");
+        await joinMatch(matchQuery);
+
+        const encodedMessage = new TextEncoder().encode(JSON.stringify("message"));
+        await socket.sendMatchState(match.match_id, OpCodes.position, encodedMessage);
+        return;
+    }
+
+    await createMatch("NoImpostersAllowed");
+    // Why are labels null? How do you set them? Do you need to? console.info(`★ ${match.label}`);
+
+    //(await client.listMatches(session)).matches.forEach(m => console.info(`★ ${match.match_id}`));
+}
+
+async function matchUpdate():Promise<void> {
+    
+    if(!socket || !match)
+    {
+        return;
+    }
+    const encodedMessage = new TextEncoder().encode(JSON.stringify({ position : 3}));
+    await socket.sendMatchState(match.match_id, OpCodes.position, encodedMessage);
+}
+
+async function joinMatch(id:string):Promise<void> {
+    console.info("☆★☆★ JOIN MATCH ★☆★☆★");
+    match = await socket.joinMatch(id);
+    console.info("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆");
+    console.info("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★");
+    console.info(`★ ★ ★ ★ ★ JOINED '${match.match_id}'`);
+    
+}
+
+async function createMatch(matchName:string):Promise<void> {
+    console.info("☆★☆★ CREATE MATCH ★☆★☆★");
+    match = await socket.createMatch(matchName);
+    console.info("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆");
+    console.info("☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★");
+    console.info(`★ ★ ★ ★ ★ CREATED '${match.match_id}'`);
 }
 
 Connect();
+
+// Update popup position display
+function updatePopup() {
+    const popup = document.getElementById("popupPosition");
+    if (popup) {
+        popup.innerText = `Position: (${Math.round(circle.x)}, ${Math.round(circle.y)})`;
+    }
+
+    const popupInfo = document.getElementById("popupInfo");
+    if (popupInfo) {
+        if(session)
+        {
+            popupInfo.innerText = `User\n Id:${session.user_id}\UserName:${session.username}\n`;
+        }
+        else
+        {
+            popupInfo.innerText = `No Session found.`;
+        }
+    }
+    /*
+    const popupInfo = document.getElementById("popupInfo");
+    if (popupInfo) {
+        if(session)
+        {
+            popupInfo.innerText = `User\n Id:${session.user_id}\UserName:${session.username}\n`;
+        }
+        else
+        {
+            popupInfo.innerText = `No Session found.`;
+        }
+    }
+    */
+}
+
+// Close button
+const popupCloseButton = document.getElementById("popupCloseButton");
+if (popupCloseButton) {
+    popupCloseButton.addEventListener("click", closePopup);
+}
+function closePopup() {
+    document.getElementById("popup").style.display = "none";
+}
+
+// Create match button
+const createMatchButton = document.getElementById("createMatchButton");
+if (popupCloseButton) {
+    popupCloseButton.addEventListener("click", ()=> createMatch("new"));
+}

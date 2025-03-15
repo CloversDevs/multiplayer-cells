@@ -13,6 +13,15 @@ const circle = {
     text: "O"
 };
 
+const circle2 = {
+    x: canvas.width / 2,
+    y: canvas.height / 2,
+    radius: 20,
+    color: "yellow",
+    speed: 4,
+    text: "O"
+};
+
 let targetX = circle.x;
 let targetY = circle.y;
 let offsetX = 0;
@@ -58,6 +67,8 @@ function update() {
     updatePopup();
     draw();
     requestAnimationFrame(update);
+
+    matchUpdate();
 }
 
 // Draw function
@@ -69,6 +80,13 @@ function draw() {
     ctx.beginPath();
     ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
     ctx.fillStyle = circle.color;
+    ctx.fill();
+    ctx.closePath();
+
+    // Draw the circle 2
+    ctx.beginPath();
+    ctx.arc(circle2.x, circle2.y, circle2.radius, 0, Math.PI * 2);
+    ctx.fillStyle = circle2.color;
     ctx.fill();
     ctx.closePath();
 
@@ -162,7 +180,17 @@ async function Connect()
 
     socket.onmatchdata = (matchState) => {
         const receivedData = new TextDecoder().decode(matchState.data);
-        console.log(`Received op code ${matchState.op_code}: ${receivedData}`);
+        try
+        {
+            const parsed = JSON.parse(receivedData)
+            console.log(`Received op code ${matchState.op_code}: ${receivedData}`);
+            circle2.x = parsed.x;
+            circle2.y = parsed.y;
+        }
+        catch
+        {
+            console.log(`Received op code ${matchState.op_code}`);
+        }
     };
     //let matches = await client.listMatches(session);
 
@@ -171,9 +199,6 @@ async function Connect()
     {
         console.info("☆★☆★ MATCH EXISTS ★☆★☆★");
         await joinMatch(matchQuery);
-
-        const encodedMessage = new TextEncoder().encode(JSON.stringify("message"));
-        await socket.sendMatchState(match.match_id, OpCodes.position, encodedMessage);
         return;
     }
 
@@ -182,15 +207,22 @@ async function Connect()
 
     //(await client.listMatches(session)).matches.forEach(m => console.info(`★ ${match.match_id}`));
 }
+let sendingMatchState:boolean = false;
+
+async function sendMatchMessage(opcode:number, obj:any):Promise<void> {
+    const encodedMessage = new TextEncoder().encode(JSON.stringify(obj));
+    await socket.sendMatchState(match.match_id, opcode, encodedMessage);
+}
 
 async function matchUpdate():Promise<void> {
     
-    if(!socket || !match)
+    if(sendingMatchState || !socket || !match)
     {
         return;
     }
-    const encodedMessage = new TextEncoder().encode(JSON.stringify({ position : 3}));
-    await socket.sendMatchState(match.match_id, OpCodes.position, encodedMessage);
+    sendingMatchState = true;
+    await sendMatchMessage(OpCodes.position,{ x : Math.round(circle.x), y : Math.round(circle.y)});
+    sendingMatchState = false;
 }
 
 async function joinMatch(id:string):Promise<void> {

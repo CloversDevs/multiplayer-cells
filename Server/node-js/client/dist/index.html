@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moving Circle Game</title>
+    <title>Game with Settings</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+    <!-- Fullscreen Canvas -->
     <canvas id="gameCanvas"></canvas>
 
-    <!-- Info Popup -->
-    <div id="popup" class="popup">
-        <p id="popupPosition">Position: (0, 0)</p>
-        <p id="popupInfo">User:</p>
-        <p>Enter your username:</p>
-        <input type="text" id="usernameInput" placeholder="Username">
-        <button id="setUsernameButton">Set Username</button>
-        <button id="popupCloseButton">Close</button>
+    <!-- UI Elements -->
+    <div class="top-bar" id="top-bar">
+        <span class="username" id="username">User123</span>
+        <span class="settings-btn" id="settingsButton">⚙️</span>
     </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+        <button id="logoutButton">Log Out</button>
+    </div>
+
     <script src="./bundle.js"></script>
 </body>
 </html>

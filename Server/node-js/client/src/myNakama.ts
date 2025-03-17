@@ -44,17 +44,19 @@ export class myNakama
     public onMatchPresenceEvent:EventHandler<MatchPresenceEvent> = new EventHandler<MatchPresenceEvent>();
     public onAccountUpdated:EventHandler<ApiAccount> = new EventHandler<ApiAccount>();
 
-    public async connect(url:string, key:string, port:string, useSsl:boolean) : Promise<void>
+    public async connect(deviceId:string, url:string, key:string, port:string, useSsl:boolean) : Promise<void>
     {
         console.info("[NAKAMA] Connect to backend...");
         this.client = new Client(key, url, port, useSsl);
         
-        console.info("[NAKAMA] Authenticate...");
-        this.session = await this.client.authenticateDevice(generateRandomString(10));
+        console.info(`[NAKAMA] Authenticat with device id '${deviceId}'..`);
+
+        this.session = await this.client.authenticateDevice(deviceId);
         console.info(`[NAKAMA] Connected as '${this.session.username}' UserId:'${this.session.user_id}'!`);
 
         console.info("[NAKAMA] Get account data...");
         this.account = await this.client.getAccount(this.session);
+        this.onAccountUpdated.invoke(this.account);
 
         console.info("[NAKAMA] Connect to socket...");
         var appearOnline = true;

@@ -1,27 +1,76 @@
-body {
+/* Reset default margin and padding */
+* {
     margin: 0;
-    overflow: hidden; /* Prevents scrolling */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #222;
-    touch-action: none; /* Disables default touch actions like zooming */
+    padding: 0;
+    box-sizing: border-box;
 }
 
+/* Fullscreen Canvas */
 canvas {
-    background: #111;
-    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000; /* Default background */
 }
 
-.popup {
+/* Top Bar */
+.top-bar {
     position: absolute;
     top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
+    right: 20px;
+    display: flex;
+    align-items: center;
+    z-index: 10; /* Ensures it's above the canvas */
+}
+
+.username, .settings-btn {
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: background 0.3s ease;
     color: white;
+    font-family: Arial;
+}
+
+/* Settings Panel */
+.settings-panel {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 20px;
+    background: white;
+    border: 1px solid #ccc;
     padding: 10px;
-    border-radius: 5px;
-    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.settings-panel.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Buttons */
+.settings-panel button {
+    display: block;
+    width: 100%;
+    padding: 5px;
+    margin: 5px 0;
+    border: none;
+    background: #ddd;
+    cursor: pointer;
+}
+
+.settings-panel button:hover {
+    background: #ccc;
+}
+
+/* Username Input */
+input.username-input {
+    border: 1px solid #ccc;
+    padding: 3px;
+    font-size: inherit;
+    width: auto;
 }

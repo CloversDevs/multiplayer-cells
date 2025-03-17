@@ -1,6 +1,5 @@
 import { MatchData, MatchPresenceEvent, User } from "@heroiclabs/nakama-js";
 import { myNakama, NakamaOpCode, sanitizeString } from "./myNakama";
-import { ApiAccount } from "@heroiclabs/nakama-js/dist/api.gen";
 
 class MatchOpCode {
     static position = 1;
@@ -71,7 +70,8 @@ export class MatchController
 
     public onMatchPresenceEvent(presenceEvent:MatchPresenceEvent):void
     {
-        // TODO: Does not seem to work.
+        // TODO: Does not seem to work... or does it?
+        // Maybe keep some local heartbeat for other players and hide them until they disconnect officialy.
         if(presenceEvent.leaves)
         {
             presenceEvent.leaves.forEach(element => {
@@ -87,8 +87,7 @@ export class MatchController
         {
             const parsed = JSON.parse(receivedData);
             let userId:string = matchData.presence.user_id;
-            //console.log(`[NAKAMA] Received op code from '${userId}' ${matchData.op_code}: ${receivedData}`);
-
+            
             let player:MatchPlayer = null;
             if (!this.players.hasOwnProperty(userId)) {
                 console.log(`[NAKAMA] New presence '${userId}' ${matchData.op_code}: ${receivedData}`);
@@ -141,11 +140,13 @@ export class MatchController
         if (distance > 1) {
             player.x += (dx / distance) * player.speed;
             player.y += (dy / distance) * player.speed;
+            player.x = Math.floor(player.x);
+            player.y = Math.floor(player.y);
         }
     }
 
     public async SendState():Promise<void> {
         let localPlayer = this.LocalPlayer;
-        await this.nk.sendMatchMessage(MatchOpCode.position,{ x : Math.round(localPlayer.x), y : Math.round(localPlayer.y)});
+        await this.nk.sendMatchMessage(MatchOpCode.position,{ x : Math.floor(localPlayer.x), y : Math.floor(localPlayer.y)});
     }
 }

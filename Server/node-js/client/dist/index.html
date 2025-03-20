@@ -7,21 +7,50 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <!-- Fullscreen Canvas -->
-    <canvas id="gameCanvas"></canvas>
-
-    <!-- UI Elements -->
-    <div class="top-bar" id="top-bar">
-        <span class="username" id="username">User123</span>
-        <span class="settings-btn" id="settingsButton">⚙️</span>
+    <!-- Game Screen -->
+    <div id="gameScreen" class="screen">
+        <canvas id="gameCanvas"></canvas>
+        <div class="top-bar" id="top-bar">
+            <span class="username" id="username">User123</span>
+            <span class="settings-btn" id="settingsButton">⚙️</span>
+        </div>
+        <div class="settings-panel active" id="settingsPanel">
+            <button id="characterSelectionButton">Character Selection</button>
+            <button id="logoutButton">Log Out</button>
+        </div>
     </div>
 
-    <!-- Settings Panel -->
-    <div class="settings-panel" id="settingsPanel">
-        <button id="logoutButton">Log Out</button>
+    <!-- Profile Selection Screen -->
+    <div id="profileScreen" class="screen hidden">
+        <div class="profile">
+            <button id="closeProfileScreenButton">❌</button>
+            <h2>Name</h2>
+            <div class="portrait">
+                <img id="portrait-img" src="https://via.placeholder.com/100" alt="Character Portrait">
+            </div>
+            <h3>Characters</h3>
+            <div class="character-grid">
+                <button class="char-btn" data-img="https://via.placeholder.com/100?text=😎">😎</button>
+                <button class="char-btn" data-img="https://via.placeholder.com/100?text=🙂">🙂</button>
+                <button class="char-btn" data-img="https://via.placeholder.com/100?text=😁">😁</button>
+                <button class="char-btn" data-img="https://via.placeholder.com/100?text=😊">😊</button>
+                <button class="char-btn" data-img="https://via.placeholder.com/100?text=⭐">⭐</button>
+                <button class="char-btn" data-img="https://via.placeholder.com/100?text=😁">😁</button>
+                <button class="char-btn" data-img="https://via.placeholder.com/100?text=🤔">🤔</button>
+                <button class="char-btn" data-img="https://via.placeholder.com/100?text=😳">😳</button>
+                <button class="char-btn" data-img="https://via.placeholder.com/100?text=😆">😆</button>
+            </div>
+
+            <h3>Powers</h3>
+            <div class="powers">
+                <div class="power">🔥 Power 1</div>
+                <div class="power">⚡ Power 2</div>
+                <div class="power">💎 Power 3</div>
+            </div>
+        </div>
     </div>
 
+    <!-- Game Scripts -->
     <script src="./bundle.js"></script>
 </body>
 </html>

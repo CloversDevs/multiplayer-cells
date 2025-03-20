@@ -5,8 +5,8 @@
     "webpack-cli": "^6.0.1"
   },
   "scripts": {
-    "build": "webpack",
-    "dev": "webpack"
+    "build": "webpack --mode development",
+    "dev": "webpack --mode development"
   },
   "dependencies": {
     "@heroiclabs/nakama-js": "^2.8.0"

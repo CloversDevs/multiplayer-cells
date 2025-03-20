@@ -5,8 +5,103 @@ import { MyMatchRenderer } from "./myMatchRenderer";
 // Setup canvas to display the match on.
 const canvasId:string = "gameCanvas"; 
 const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+if(!canvas) 
+{
+    console.error("no canvas");
+}
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+
+
+/////////////////////
+class ScreenManager {
+    screens: Record<string, HTMLElement>;
+
+    constructor() {
+        this.screens = {
+            gameScreen: document.getElementById('gameScreen')!,
+            profileScreen: document.getElementById('profileScreen')!,
+        };
+    }
+
+    showScreen(screenName: string) {
+    		console.log(`Open screen: '${screenName}'`);
+        Object.keys(this.screens).forEach(screen => console.log(`Option: '${screen}'`));
+        Object.values(this.screens).forEach(screen => screen.classList.add('hidden'));
+         
+        this.screens[screenName].classList.remove('hidden');
+    }
+}
+
+const screenManager = new ScreenManager();
+
+// Switch to Profile Selection on Load
+//screenManager.showScreen('profile');
+
+// Handle Character Selection
+document.getElementById('characterSelectionButton')?.addEventListener('click', () => {
+    screenManager.showScreen('profileScreen');
+});
+
+// Handle Character Selection
+document.getElementById('closeProfileScreenButton')?.addEventListener('click', () => {
+    screenManager.showScreen('gameScreen');
+});
+
+
+//////////////////////
+
+document.addEventListener("DOMContentLoaded", () => {
+    const profileScreen = document.getElementById("profileScreen");
+    if (!profileScreen) return;
+
+    const portraitImg = profileScreen.querySelector("#portrait-img") as HTMLImageElement;
+    const charButtons = profileScreen.querySelectorAll<HTMLButtonElement>(".character-grid .char-btn");
+    const powerElements = profileScreen.querySelectorAll<HTMLDivElement>(".powers .power");
+
+    charButtons.forEach((button, index) => {
+        button.addEventListener("click", () => {
+            const imgSrc = button.getAttribute("data-img");
+            if (imgSrc && portraitImg) {
+                portraitImg.src = imgSrc;
+                console.log(`Button ${index} clicked. Image set to: ${imgSrc}`);
+            }
+            setPowerText(index,`${index}`)
+        });
+    });
+
+    const setCharacterImage = (index: number, imgSrc: string) => {
+        if (index >= 0 && index < charButtons.length) {
+            charButtons[index].setAttribute("data-img", imgSrc);
+            console.log(`Character button ${index} image set to ${imgSrc}`);
+        }
+    };
+
+    const setPowerText = (index: number, text: string) => {
+      if (index < 0 || index >= powerElements.length) {
+      	console.error(`Can't set power text out of index ${index} in length ${powerElements.length}`);
+        return;
+      }
+      powerElements[index].textContent = text;
+      console.log(`Power ${index} text set to ${text}`);
+    };
+
+    const closeProfileButton = profileScreen.querySelector("#closeProfileScreenButton");
+    closeProfileButton?.addEventListener("click", () => {
+        profileScreen.classList.add("hidden");
+        console.log("Profile screen closed.");
+    });
+
+    // Exposing functions globally (optional, for debugging)
+    (window as any).setCharacterImage = setCharacterImage;
+    (window as any).setPowerText = setPowerText;
+});
+
+
+
+
+//////////////////////
+
 
 // Prevent touch scrolling and pinch zooming
 document.addEventListener("touchmove", (event) => {

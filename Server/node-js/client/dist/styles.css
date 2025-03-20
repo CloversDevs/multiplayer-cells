@@ -1,76 +1,171 @@
 /* Reset default margin and padding */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 /* Fullscreen Canvas */
 canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #000; /* Default background */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  /* Default background */
 }
 
 /* Top Bar */
 .top-bar {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    display: flex;
-    align-items: center;
-    z-index: 10; /* Ensures it's above the canvas */
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+  /* Ensures it's above the canvas */
 }
 
-.username, .settings-btn {
-    cursor: pointer;
-    padding: 5px 10px;
-    transition: background 0.3s ease;
-    color: white;
-    font-family: Arial;
+.username,
+.settings-btn {
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: background 0.3s ease;
+  color: white;
+  font-family: Arial;
 }
 
 /* Settings Panel */
 .settings-panel {
-    display: none;
-    position: absolute;
-    top: 40px;
-    right: 20px;
-    background: white;
-    border: 1px solid #ccc;
-    padding: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  display: none;
+  position: absolute;
+  top: 40px;
+  right: 20px;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .settings-panel.active {
-    display: block;
-    opacity: 1;
+  display: block;
+  opacity: 1;
 }
 
 /* Buttons */
 .settings-panel button {
-    display: block;
-    width: 100%;
-    padding: 5px;
-    margin: 5px 0;
-    border: none;
-    background: #ddd;
-    cursor: pointer;
+  display: block;
+  width: 100%;
+  padding: 5px;
+  margin: 5px 0;
+  border: none;
+  background: #ddd;
+  cursor: pointer;
 }
 
 .settings-panel button:hover {
-    background: #ccc;
+  background: #ccc;
 }
 
 /* Username Input */
 input.username-input {
-    border: 1px solid #ccc;
-    padding: 3px;
-    font-size: inherit;
-    width: auto;
+  border: 1px solid #ccc;
+  padding: 3px;
+  font-size: inherit;
+  width: auto;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8f8f8;
+}
+
+.profile {
+  border: 2px solid black;
+  width: 320px;
+  padding: 15px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.portrait {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.portrait img {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  border: 2px solid #ddd;
+}
+
+.character-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.character-grid button {
+  font-size: 24px;
+  padding: 10px;
+  border: 2px solid #ccc;
+  background: white;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.character-grid button:hover {
+  background: #f0f0f0;
+}
+
+.character-grid button.selected {
+  border-color: #ff9800;
+  background: #ffe0b2;
+}
+
+.powers {
+  margin-top: 15px;
+}
+
+.power {
+  border: 2px solid black;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 5px;
+  background: white;
+  font-size: 18px;
+}
+
+.screen {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 1);
+  /* Semi-transparent overlay */
+  /*backdrop-filter: blur(10px);*/
+  /* Apply blur effect */
+  z-index: 5;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
 }

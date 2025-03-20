@@ -16,6 +16,7 @@
         </div>
         <div class="settings-panel active" id="settingsPanel">
             <button id="characterSelectionButton">Character Selection</button>
+            <button id="colorPickerSelectionButton">Color Picker</button>
             <button id="logoutButton">Log Out</button>
         </div>
     </div>
@@ -23,8 +24,11 @@
     <!-- Profile Selection Screen -->
     <div id="profileScreen" class="screen hidden">
         <div class="profile">
-            <button id="closeProfileScreenButton">❌</button>
-            <h2>Name</h2>
+            <div class="header">
+              <h2>Character Selection</h2>
+              <button id="closeProfileScreenButton">❌</button>
+            </div>
+            <h3>Name</h3>
             <div class="portrait">
                 <img id="portrait-img" src="https://via.placeholder.com/100" alt="Character Portrait">
             </div>
@@ -48,6 +52,16 @@
                 <div class="power">💎 Power 3</div>
             </div>
         </div>
+    </div>
+    
+    <!-- Color Picker -->
+    <div id="colorPickerScreen" class="screen hidden">
+      <div class="header">
+        <h2>Character Selection</h2>
+        <button id="closeColorPickerScreenButton">❌</button>
+      </div>
+      <input type="color" id="colorPicker" value="#ff0000">
+      <div id="colorBox" style="background-color: #ff0000;"></div>
     </div>
 
     <!-- Game Scripts -->

@@ -1,8 +1,66 @@
 import { myNakama } from "./myNakama";
 import { MatchController } from "./myMatch";
 import { MyMatchRenderer } from "./myMatchRenderer";
+import { ScreenManager } from "./ScreenManager";
 
-// Setup canvas to display the match on.
+///////////////////////
+// Setup screen flow //
+///////////////////////
+
+const screenManager = new ScreenManager();
+screenManager.addScreen('gameScreen');
+screenManager.addScreen('profileScreen');
+screenManager.addScreen('colorPickerScreen');
+
+// Open Open Profile Screen Button
+document.getElementById('characterSelectionButton')?.addEventListener('click', () => {
+    screenManager.showScreen('profileScreen');
+});
+
+// Open Color Picker Screen Button
+document.getElementById('colorPickerSelectionButton')?.addEventListener('click', () => {
+    screenManager.showScreen('colorPickerScreen');
+});
+
+// Close Profile Screen Button
+document.getElementById('closeProfileScreenButton')?.addEventListener('click', () => {
+    screenManager.showScreen('gameScreen');
+});
+
+// Close Color Picker Screen Button
+document.getElementById('closeColorPickerScreenButton')?.addEventListener('click', () => {
+    screenManager.showScreen('gameScreen');
+});
+
+const colorPicker = document.getElementById("colorPicker") as HTMLInputElement;
+const colorBox = document.getElementById("colorBox") as HTMLElement;
+
+if (colorPicker && colorBox) {
+    colorPicker.addEventListener("input", () => {
+        const selectedColor = colorPicker.value;
+        colorBox.style.backgroundColor = selectedColor;
+        console.log("Selected color:", selectedColor);
+        localStorage.setItem(USER_COLOR_STORAGE_KEY, selectedColor);
+    });
+}
+
+const USER_COLOR_STORAGE_KEY = "userColor";
+const getOrCreateUserColor = ():string=> {
+    let userColor = localStorage.getItem(USER_COLOR_STORAGE_KEY);
+    if (!userColor) {
+        userColor = "blue";
+        console.info(`[BOOT] Generate new color: '${userColor}'`);
+        localStorage.setItem(USER_COLOR_STORAGE_KEY, userColor);
+        return userColor;
+    }
+    console.info(`[BOOT] Load existing device id: '${userColor}'`);
+    return userColor;
+}
+
+//////////////////////////////////////////
+// Setup canvas to display the match on //
+//////////////////////////////////////////
+
 const canvasId:string = "gameCanvas"; 
 const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
 if(!canvas) 
@@ -12,42 +70,14 @@ if(!canvas)
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// Prevent touch scrolling and pinch zooming
+document.addEventListener("touchmove", (event) => {
+    event.preventDefault();
+}, { passive: false });
 
-/////////////////////
-class ScreenManager {
-    screens: Record<string, HTMLElement>;
-
-    constructor() {
-        this.screens = {
-            gameScreen: document.getElementById('gameScreen')!,
-            profileScreen: document.getElementById('profileScreen')!,
-        };
-    }
-
-    showScreen(screenName: string) {
-    		console.log(`Open screen: '${screenName}'`);
-        Object.keys(this.screens).forEach(screen => console.log(`Option: '${screen}'`));
-        Object.values(this.screens).forEach(screen => screen.classList.add('hidden'));
-         
-        this.screens[screenName].classList.remove('hidden');
-    }
-}
-
-const screenManager = new ScreenManager();
-
-// Switch to Profile Selection on Load
-//screenManager.showScreen('profile');
-
-// Handle Character Selection
-document.getElementById('characterSelectionButton')?.addEventListener('click', () => {
-    screenManager.showScreen('profileScreen');
+document.addEventListener("gesturestart", (event) => {
+    event.preventDefault();
 });
-
-// Handle Character Selection
-document.getElementById('closeProfileScreenButton')?.addEventListener('click', () => {
-    screenManager.showScreen('gameScreen');
-});
-
 
 //////////////////////
 
@@ -102,16 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //////////////////////
 
-
-// Prevent touch scrolling and pinch zooming
-document.addEventListener("touchmove", (event) => {
-    event.preventDefault();
-}, { passive: false });
-
-document.addEventListener("gesturestart", (event) => {
-    event.preventDefault();
-});
-
 // Track mouse movement
 window.addEventListener("mousemove", (event) => {
     if(!matchController || topBar.contains(event.target as Element) || settingsPanel.contains(event.target as Element)) return;
@@ -125,10 +145,14 @@ canvas.addEventListener("touchmove", (event) => {
     matchController.OnPlayerClick(touch.clientX, touch.clientY);
 }, { passive: false });
 
+let lastNetworkUpdate = 0;
+const networkUpdateRate = 1000 / 20; // 20 updates per second
+
 // Update and draw the game loop
-function update() {
+function update(currentTime: number) {
     if(matchController)
     {
+        matchController.LocalPlayer.color = getOrCreateUserColor();
         matchController.Update();
         matchRenderer.Draw(matchController);
     }
@@ -139,10 +163,13 @@ function update() {
     
     if(matchController)
     {
-        matchController.SendState();
+        const deltaTime = currentTime - lastNetworkUpdate;
+        if (deltaTime >= networkUpdateRate) {
+            matchController.SendState();
+            lastNetworkUpdate = currentTime;
+        }
     }
 }
-
 
 // Resize canvas dynamically
 window.addEventListener("resize", () => {
@@ -151,7 +178,7 @@ window.addEventListener("resize", () => {
 });
 
 // Start the game loop
-update();
+requestAnimationFrame(update);
 
 // Update popup position display
 function updatePopup() {
@@ -242,6 +269,7 @@ function editUsername(): void {
 // Log out function
 function logout(): void {
     localStorage.removeItem(DEVICE_ID_STORAGE_KEY);
+    localStorage.removeItem(USER_COLOR_STORAGE_KEY);
     window.location.reload();
 }
 

@@ -4,6 +4,14 @@ import { myNakama, NakamaOpCode, sanitizeString } from "./myNakama";
 class MatchOpCode {
     static position = 1;
     static vote = 2;
+    static userState = 3;
+}
+
+class UserState
+{
+    public x: number;
+    public y: number;
+    public color: string;
 }
 
 export class MatchPlayer
@@ -13,6 +21,8 @@ export class MatchPlayer
 
     x:number = 0;
     y:number = 0;
+    target_x:number = 0;
+    target_y:number = 0;
     radius:number = 20;
     color:string = "yellow";
     speed:number = 4;
@@ -102,7 +112,6 @@ export class MatchController
                 return;
             }
             
-            
             switch (matchData.op_code)
             {
                 case NakamaOpCode.accountUpdated:
@@ -112,6 +121,11 @@ export class MatchController
                 case MatchOpCode.position:
                     player.x = parsed.x;
                     player.y = parsed.y;
+                    break;
+                case MatchOpCode.userState:
+                    player.target_x = parsed.x;
+                    player.target_y = parsed.y;
+                    player.color = parsed.color;
                     break;
                 default:
                     console.log(`[NAKAMA] Unknown op code: '${matchData.op_code}'`);
@@ -132,21 +146,47 @@ export class MatchController
 
     public Update() {
         // move player
-        let player = this.LocalPlayer;
-        const dx = this.targetX - player.x;
-        const dy = this.targetY - player.y;
+        let localPlayer = this.LocalPlayer;
+        const dx = this.targetX - localPlayer.x;
+        const dy = this.targetY - localPlayer.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         if (distance > 1) {
-            player.x += (dx / distance) * player.speed;
-            player.y += (dy / distance) * player.speed;
-            player.x = Math.floor(player.x);
-            player.y = Math.floor(player.y);
+            localPlayer.x += (dx / distance) * localPlayer.speed;
+            localPlayer.y += (dy / distance) * localPlayer.speed;
+            localPlayer.x = Math.floor(localPlayer.x);
+            localPlayer.y = Math.floor(localPlayer.y);
         }
+
+        const moveTowards =(current: number, target: number, maxDelta: number) => {
+            const delta = target - current;
+            if (Math.abs(delta) <= maxDelta) {
+                return target; // Already at or within the max distance
+            }
+            return current + Math.sign(delta) * maxDelta;
+        }
+
+        const playerIds = Object.keys(this.players)
+
+        playerIds.forEach(playerId => {
+            const player = this.players[playerId];
+            if(player !== localPlayer) 
+            {
+                player.x = moveTowards(player.x, player.target_x, player.speed * 2);
+                player.y = moveTowards(player.y, player.target_y, player.speed * 2);
+            }
+        });
     }
 
     public async SendState():Promise<void> {
-        let localPlayer = this.LocalPlayer;
-        await this.nk.sendMatchMessage(MatchOpCode.position,{ x : Math.floor(localPlayer.x), y : Math.floor(localPlayer.y)});
+        const localPlayer = this.LocalPlayer;
+
+        const userState:UserState = {
+            x: Math.floor(localPlayer.x),
+            y: Math.floor(localPlayer.y),
+            color: localPlayer.color
+        }
+        
+        await this.nk.sendMatchMessage(MatchOpCode.userState, userState);
     }
 }

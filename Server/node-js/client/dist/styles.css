@@ -5,30 +5,35 @@
   box-sizing: border-box;
 }
 
-/* Fullscreen Canvas */
+body {
+font-family: Arial, sans-serif;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+background-color: #f8f8f8;
+}
+
+/* Game Screen */
 canvas {
   position: absolute;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #000;
-  /* Default background */
+  background: #000; /* Default background */
 }
 
-/* Top Bar */
 .top-bar {
   position: absolute;
   top: 10px;
   right: 20px;
   display: flex;
   align-items: center;
-  z-index: 10;
-  /* Ensures it's above the canvas */
+  z-index: 10; /* Ensures it's above the canvas */
 }
 
-.username,
-.settings-btn {
+.username, .settings-btn {
   cursor: pointer;
   padding: 5px 10px;
   transition: background 0.3s ease;
@@ -78,73 +83,70 @@ input.username-input {
   width: auto;
 }
 
-body {
-  font-family: Arial, sans-serif;
+/* Profile Screen */
+.header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  height: 100vh;
-  background-color: #f8f8f8;
+}
+
+#closeProfileScreenButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
 }
 
 .profile {
-  border: 2px solid black;
-  width: 320px;
-  padding: 15px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+border: 2px solid black;
+width: 320px;
+padding: 15px;
+background: white;
+border-radius: 10px;
+box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
 }
-
 .portrait {
-  text-align: center;
-  margin-bottom: 10px;
+text-align: center;
+margin-bottom: 10px;
 }
-
 .portrait img {
-  width: 100px;
-  height: 100px;
-  border-radius: 10px;
-  border: 2px solid #ddd;
+width: 100px;
+height: 100px;
+border-radius: 10px;
+border: 2px solid #ddd;
 }
-
 .character-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-top: 10px;
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 8px;
+margin-top: 10px;
 }
-
 .character-grid button {
-  font-size: 24px;
-  padding: 10px;
-  border: 2px solid #ccc;
-  background: white;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: 0.3s;
+font-size: 24px;
+padding: 10px;
+border: 2px solid #ccc;
+background: white;
+cursor: pointer;
+border-radius: 5px;
+transition: 0.3s;
 }
-
 .character-grid button:hover {
-  background: #f0f0f0;
+background: #f0f0f0;
 }
-
 .character-grid button.selected {
-  border-color: #ff9800;
-  background: #ffe0b2;
+border-color: #ff9800;
+background: #ffe0b2;
 }
-
 .powers {
-  margin-top: 15px;
+margin-top: 15px;
 }
-
 .power {
-  border: 2px solid black;
-  padding: 8px;
-  margin-top: 5px;
-  border-radius: 5px;
-  background: white;
-  font-size: 18px;
+border: 2px solid black;
+padding: 8px;
+margin-top: 5px;
+border-radius: 5px;
+background: white;
+font-size: 18px;
 }
 
 .screen {
@@ -156,10 +158,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 1);
-  /* Semi-transparent overlay */
-  /*backdrop-filter: blur(10px);*/
-  /* Apply blur effect */
+  background: rgba(0, 0, 0, 1); /* Semi-transparent overlay */
+  backdrop-filter: blur(10px); /* Apply blur effect */
   z-index: 5;
   transition: opacity 0.3s ease-in-out;
 }
@@ -168,4 +168,19 @@ body {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease-out;
+}
+
+/* Color picker */
+#colorBox {
+width: 200px;
+height: 200px;
+margin: 20px auto;
+border: 2px solid #000;
+border-radius: 10px;
+}
+input[type=color] {
+margin: 10px;
+padding: 5px;
+border-radius: 5px;
+border: 1px solid #ccc;
 }

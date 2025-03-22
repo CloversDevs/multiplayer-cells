@@ -2,6 +2,7 @@ import { myNakama } from "./myNakama";
 import { MatchController } from "./myMatch";
 import { MyMatchRenderer } from "./myMatchRenderer";
 import { ScreenManager } from "./ScreenManager";
+import { NAKAMA_SOCKET_SERVER_KEY } from "./publicKeys";
 
 ///////////////////////
 // Setup screen flow //
@@ -293,7 +294,7 @@ let matchController:MatchController = null;
 const matchRenderer:MyMatchRenderer = new MyMatchRenderer(canvasId);
 
 const DEVICE_ID_STORAGE_KEY = "deviceID";
-const NAKAMA_PUBLIC_KEY = "defaultkey";
+const NAKAMA_PUBLIC_KEY = NAKAMA_SOCKET_SERVER_KEY;
 const NAKAMA_URL = window.location.hostname;
 const NAKAMA_PORT = "7350";
 const NAKAMA_USE_SSL = false;

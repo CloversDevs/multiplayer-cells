@@ -1,0 +1,1 @@
+export const NAKAMA_SOCKET_SERVER_KEY = 'placeholder';

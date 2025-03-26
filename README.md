@@ -21,6 +21,10 @@ Open Server folder on terminal and run:
 To connect use the IP on port 3000 on a browser.
 For example [http://localhost:3000](http://localhost:3000)
 
+
+Create debug SSL certificates:
+```openssl req -nodes -new -x509 -keyout server.key -out server.cert```
+
 ## Stoping server
 To stop server gracefully run:
 

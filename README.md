@@ -11,7 +11,7 @@ or use the provided script in the Server folder.
 
 ```
 chmod +x apply_keys.sh
-./apply_keys.sh NAKAMA_SESSION_ENCRYPTION_KEY ./node-js/client/src/publicKeys.ts
+./apply_keys.sh NAKAMA_SOCKET_SERVER_KEY ./node-js/client/src/publicKeys.ts
 ```
 
 Open Server folder on terminal and run:

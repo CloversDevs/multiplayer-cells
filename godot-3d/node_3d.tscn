@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://dqt8eboqfex7r"]
+
+[ext_resource type="PackedScene" uid="uid://prh35jb6tjtd" path="res://addons/gdquest_sophia/sophia_skin.tscn" id="1_a202f"]
+[ext_resource type="Script" uid="uid://c61bun3ebe28x" path="res://game.gd" id="1_noarx"]
+
+[node name="Node3D" type="Node3D"]
+script = ExtResource("1_noarx")
+
+[node name="SophiaSkin" parent="." instance=ExtResource("1_a202f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00178397, 0, 0.0536847)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.75655, 0, -0.653936, 0, 1, 0, 0.653936, 0, 0.75655, -1.51299, 1.14534, 1.63708)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.65061)
+light_color = Color(0.313726, 0.360784, 0.792157, 1)

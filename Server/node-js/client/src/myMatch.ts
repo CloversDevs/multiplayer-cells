@@ -26,7 +26,7 @@ export class MatchPlayer
     radius:number = 20;
     color:string = "yellow";
     speed:number = 4;
-    text:string = "O";
+    text:string = "anonymous";
 
     constructor(userId:string)
     {

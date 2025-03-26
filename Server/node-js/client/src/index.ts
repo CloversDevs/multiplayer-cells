@@ -54,7 +54,6 @@ const getOrCreateUserColor = ():string=> {
         localStorage.setItem(USER_COLOR_STORAGE_KEY, userColor);
         return userColor;
     }
-    console.info(`[BOOT] Load existing device id: '${userColor}'`);
     return userColor;
 }
 

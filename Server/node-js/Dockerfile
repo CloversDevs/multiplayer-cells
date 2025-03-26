@@ -20,16 +20,12 @@ RUN npm install
 WORKDIR /app
 COPY . .
 
-# Overwrite the file with the environment variable
-# TODO: Get this value from the docker-compose.yml
-# RUN echo "export const NAKAMA_SOCKET_SERVER_KEY = '${NAKAMA_SOCKET_SERVER_KEY}';" > ./client/src/publicKeys.ts
-
 # Compile TypeScript for both server and client
 RUN cd server && npm run build
 RUN cd client && npm run build
 
-# Expose the port the server runs on
-EXPOSE 3000
+# Expose the HTTPS port
+EXPOSE 443
 
 # Start the TypeScript server
 CMD ["node", "server/dist/index.js"]

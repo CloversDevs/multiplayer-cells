@@ -56,7 +56,7 @@ services:
     container_name: web-server
     build: ./node-js
     ports:
-      - "443:443"
+      - "3000:3000"
     volumes:
       - ./node-js/public:/app/public
     depends_on:

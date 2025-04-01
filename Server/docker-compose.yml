@@ -5,8 +5,7 @@ services:
     image: postgres:12.2-alpine
     environment:
       - POSTGRES_DB=nakama
-      - POSTGRES_USER=${POSGRES_USERNAME}
-      - POSTGRES_PASSWORD=${POSGRES_PASSWORD}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - data:/var/lib/postgresql/data
     expose:
@@ -16,20 +15,19 @@ services:
       - "5432:5432"
       - "8080:8080"
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSGRES_USERNAME}", "-d", "nakama"]
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "nakama"]
       interval: 3s
       timeout: 3s
       retries: 5
   nakama:
+    build: ./game/
     container_name: nakama
-    image: registry.heroiclabs.com/heroiclabs/nakama:3.26.0
-    platform: ${DOCKER_PLATFORM:-linux/amd64}  # Default to amd64 if not set
     entrypoint:
       - "/bin/sh"
       - "-ecx"
       - >
-          /nakama/nakama migrate up --database.address ${POSGRES_USERNAME}:${POSGRES_PASSWORD}@postgres:5432/nakama &&
-          exec /nakama/nakama --name nakama1 --database.address ${POSGRES_USERNAME}:${POSGRES_PASSWORD}@postgres:5432/nakama --logger.level DEBUG --session.token_expiry_sec 7200 --console.username ${NAKAMA_ADMIN_USERNAME} --console.password ${NAKAMA_ADMIN_PASSWORD} --session.encryption_key ${NAKAMA_SESSION_ENCRYPTION_KEY} --session.refresh_encryption_key ${NAKAMA_SESSION_REFRESH_ENCRYPTION_KEY} --socket.server_key ${NAKAMA_SOCKET_SERVER_KEY} --runtime.http_key ${NAKAMA_RUNTIME_HTTP_KEY}
+          /nakama/nakama migrate up --database.address postgres:${POSTGRES_PASSWORD}@postgres:5432/nakama &&
+          exec /nakama/nakama --config /nakama/local.yml --name nakama1 --database.address postgres:${POSTGRES_PASSWORD}@postgres:5432/nakama --logger.level DEBUG --session.token_expiry_sec 7200 --console.username ${NAKAMA_ADMIN_USERNAME} --console.password ${NAKAMA_ADMIN_PASSWORD} --session.encryption_key ${NAKAMA_SESSION_ENCRYPTION_KEY} --session.refresh_encryption_key ${NAKAMA_SESSION_REFRESH_ENCRYPTION_KEY} --socket.server_key ${NAKAMA_SOCKET_SERVER_KEY} --runtime.http_key ${NAKAMA_RUNTIME_HTTP_KEY}
     restart: always
     links:
       - "postgres:db"

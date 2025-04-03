@@ -39,7 +39,9 @@ export class MatchPlayer
         ids.push(this.userId);
         let users = await nk.client.getUsers(nk.session, ids);
         this.user = users.users[0];
-        this.text = sanitizeString(this.user.display_name, 10);
+
+        //TODO: There seems to be some issue with the logic for the local player the first time where this is null.
+        this.text = sanitizeString(this.user.display_name ?? "unknown", 10);
     }
 }
 

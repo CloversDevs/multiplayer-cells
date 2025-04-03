@@ -213,6 +213,17 @@ function closePopup() {
     document.getElementById("popup").style.display = "none";
 }
 
+// RPC button
+const rpcTestButton = document.getElementById("rpcTestButton");
+if (rpcTestButton) {
+    rpcTestButton.addEventListener("click", rpcTest);
+}
+
+async function rpcTest():Promise<void> {
+    const response = await nk.rpcHealthCheck();
+    alert(JSON.stringify(response));
+}
+
 // Create match button
 const createMatchButton = document.getElementById("createMatchButton");
 if (popupCloseButton) {

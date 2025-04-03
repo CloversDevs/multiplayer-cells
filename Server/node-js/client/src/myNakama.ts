@@ -7,6 +7,7 @@ export class NakamaOpCode {
     static accountUpdated = -1;
 }
 
+const RPC_ID_HEALTHCHECK:string = "healthcheck";
 
 export function sanitizeString(text: string, maxLength: number = 10): string {
     return text
@@ -117,5 +118,13 @@ export class myNakama
         const encodedMessage = new TextEncoder().encode(JSON.stringify(obj));
         await this.socket.sendMatchState(this.match.match_id, opcode, encodedMessage);
         this.sendingMatchState = false;
+    }
+
+    async rpcHealthCheck() : Promise<object>
+    {
+        console.log("heath check")
+        const response = await this.client.rpc(this.session, RPC_ID_HEALTHCHECK, {});
+        console.log(response);
+        return response.payload;
     }
 }

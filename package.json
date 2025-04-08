@@ -1,0 +1,14 @@
+{
+  "name": "multiplayer-cells",
+  "version": "1.0.0",
+  "description": "A nakama multiplayer game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lauch": "cd Server/ && docker-compose down && docker system prune -f && docker-compose up --build -d && docker-compose logs -f",
+    "close": "cd Server/ && docker-compose down && docker system prune -f"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

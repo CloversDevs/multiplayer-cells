@@ -19,6 +19,8 @@
             <button id="characterSelectionButton">Character Selection</button>
             <button id="colorPickerSelectionButton">Color Picker</button>
             <button id="rpcTestButton">Test Nakama RPC</button>
+            <button id="rpcFindMatch">Connect to match RPC</button>
+            <button id="tictactoeButton">Ta Te Ti</button>
             <button id="logoutButton">Log Out</button>
         </div>
     </div>
@@ -64,6 +66,30 @@
       </div>
       <div id="colorBox" style="background-color: #ff0000"></div>
     </div>
+
+    <!-- Tic Tac Toe Screen -->
+    <div id="ticTacToeScreen" class="screen hidden">
+        <div class="tic-tac-toe">
+        <div class="header">
+            <h2>Tic Tac Toe</h2>
+            <button id="closeTicTacToeButton">❌</button>
+        </div>
+        <div class="tic-tac-toe-grid">
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+        </div>
+        <div class="status" id="gameStatus">Player X's turn</div>
+        <button class="restart-btn" id="restartTicTacToeButton">Restart</button>
+        </div>
+    </div>
+    
 
     <!-- Game Scripts -->
     <script src="./bundle.js"></script>

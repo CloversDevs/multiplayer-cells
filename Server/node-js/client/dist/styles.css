@@ -184,3 +184,57 @@ padding: 5px;
 border-radius: 5px;
 border: 1px solid #ccc;
 }
+
+/* Tic Tac Toe Screen */
+.tic-tac-toe {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.3);
+  width: 300px;
+  text-align: center;
+}
+
+.tic-tac-toe-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin: 20px 0;
+}
+
+.cell {
+  width: 80px;
+  height: 80px;
+  background: #f0f0f0;
+  font-size: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid #ccc;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.cell:hover {
+  background: #e0e0e0;
+}
+
+.status {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.restart-btn {
+  padding: 8px 16px;
+  background: #ddd;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.restart-btn:hover {
+  background: #ccc;
+}

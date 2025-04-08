@@ -2,6 +2,8 @@
     "files": [
         "./main.ts",
         "./healthcheck.ts",
+        "./matchHandler.ts",
+        "./findMatch.ts",
     ],
     "compilerOptions": {
         "target": "ES5",

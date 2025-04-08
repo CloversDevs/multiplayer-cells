@@ -4,34 +4,25 @@ import { MyMatchRenderer } from "./myMatchRenderer";
 import { ScreenManager } from "./ScreenManager";
 import { NAKAMA_SOCKET_SERVER_KEY } from "./publicKeys";
 
-///////////////////////
-// Setup screen flow //
-///////////////////////
+const USER_COLOR_STORAGE_KEY = "userColor";
+
+////////////////
+// UI Binding //
+////////////////
 
 const screenManager = new ScreenManager();
 screenManager.addScreen('gameScreen');
 screenManager.addScreen('profileScreen');
 screenManager.addScreen('colorPickerScreen');
+screenManager.addScreen('ticTacToeScreen');
 
-// Open Open Profile Screen Button
-document.getElementById('characterSelectionButton')?.addEventListener('click', () => {
-    screenManager.showScreen('profileScreen');
-});
-
-// Open Color Picker Screen Button
-document.getElementById('colorPickerSelectionButton')?.addEventListener('click', () => {
-    screenManager.showScreen('colorPickerScreen');
-});
-
-// Close Profile Screen Button
-document.getElementById('closeProfileScreenButton')?.addEventListener('click', () => {
-    screenManager.showScreen('gameScreen');
-});
-
-// Close Color Picker Screen Button
-document.getElementById('closeColorPickerScreenButton')?.addEventListener('click', () => {
-    screenManager.showScreen('gameScreen');
-});
+// Open Screen buttons
+document.getElementById('characterSelectionButton')?.addEventListener('click', () => screenManager.showScreen('profileScreen'));
+document.getElementById('colorPickerSelectionButton')?.addEventListener('click', () => screenManager.showScreen('colorPickerScreen'));
+document.getElementById('closeProfileScreenButton')?.addEventListener('click', () =>  screenManager.showScreen('gameScreen'));
+document.getElementById('closeColorPickerScreenButton')?.addEventListener('click', () => screenManager.showScreen('gameScreen'));
+document.getElementById('closeColorPickerScreenButton')?.addEventListener('click', () => screenManager.showScreen('gameScreen'));
+document.getElementById('closeTicTacToeButton')?.addEventListener('click', () => screenManager.showScreen('gameScreen'));
 
 const colorPicker = document.getElementById("colorPicker") as HTMLInputElement;
 const colorBox = document.getElementById("colorBox") as HTMLElement;
@@ -45,7 +36,6 @@ if (colorPicker && colorBox) {
     });
 }
 
-const USER_COLOR_STORAGE_KEY = "userColor";
 const getOrCreateUserColor = ():string=> {
     let userColor = localStorage.getItem(USER_COLOR_STORAGE_KEY);
     if (!userColor) {
@@ -57,9 +47,32 @@ const getOrCreateUserColor = ():string=> {
     return userColor;
 }
 
-//////////////////////////////////////////
-// Setup canvas to display the match on //
-//////////////////////////////////////////
+// Close button
+document.getElementById("popupCloseButton")?.addEventListener("click", closePopup);
+document.getElementById("createMatchButton")?.addEventListener("click", ()=> nk.createMatch("new"));
+document.getElementById("rpcTestButton")?.addEventListener("click", rpcTest);
+document.getElementById("rpcFindMatch")?.addEventListener("click", rpcFindMatch);
+
+function closePopup() {
+    document.getElementById("popup").style.display = "none";
+}
+
+// Get elements
+const topBar = document.getElementById("top-bar") as HTMLElement;
+const settingsButton = document.getElementById("settingsButton") as HTMLElement;
+const settingsPanel = document.getElementById("settingsPanel") as HTMLElement;
+const username = document.getElementById("username") as HTMLElement;
+const logoutButton = document.getElementById("logoutButton") as HTMLElement;
+
+// Event listeners
+settingsButton.addEventListener("click", toggleSettings);
+username.addEventListener("click", editUsername);
+logoutButton.addEventListener("click", logout);
+
+
+//////////////////
+// Setup canvas //
+//////////////////
 
 const canvasId:string = "gameCanvas"; 
 const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
@@ -67,8 +80,16 @@ if(!canvas)
 {
     console.error("no canvas");
 }
+
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+
+// Resize canvas dynamically
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
 
 // Prevent touch scrolling and pinch zooming
 document.addEventListener("touchmove", (event) => {
@@ -121,16 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
         profileScreen.classList.add("hidden");
         console.log("Profile screen closed.");
     });
-
-    // Exposing functions globally (optional, for debugging)
-    (window as any).setCharacterImage = setCharacterImage;
-    (window as any).setPowerText = setPowerText;
 });
-
-
-
-
-//////////////////////
 
 // Track mouse movement
 window.addEventListener("mousemove", (event) => {
@@ -171,11 +183,17 @@ function update(currentTime: number) {
     }
 }
 
-// Resize canvas dynamically
-window.addEventListener("resize", () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-});
+
+async function rpcTest():Promise<void> {
+    const response = await nk.rpcHealthCheck();
+    alert(JSON.stringify(response));
+}
+
+async function rpcFindMatch():Promise<void> {
+    const response = await nk.rpcHealthCheck();
+    nk.joinMatch(response.id);
+    alert(JSON.stringify(response));
+}
 
 // Start the game loop
 requestAnimationFrame(update);
@@ -203,44 +221,6 @@ function updatePopup() {
         }
     }
 }
-
-// Close button
-const popupCloseButton = document.getElementById("popupCloseButton");
-if (popupCloseButton) {
-    popupCloseButton.addEventListener("click", closePopup);
-}
-function closePopup() {
-    document.getElementById("popup").style.display = "none";
-}
-
-// RPC button
-const rpcTestButton = document.getElementById("rpcTestButton");
-if (rpcTestButton) {
-    rpcTestButton.addEventListener("click", rpcTest);
-}
-
-async function rpcTest():Promise<void> {
-    const response = await nk.rpcHealthCheck();
-    alert(JSON.stringify(response));
-}
-
-// Create match button
-const createMatchButton = document.getElementById("createMatchButton");
-if (popupCloseButton) {
-    popupCloseButton.addEventListener("click", ()=> nk.createMatch("new"));
-}
-
-// Get elements
-const topBar = document.getElementById("top-bar") as HTMLElement;
-const settingsButton = document.getElementById("settingsButton") as HTMLElement;
-const settingsPanel = document.getElementById("settingsPanel") as HTMLElement;
-const username = document.getElementById("username") as HTMLElement;
-const logoutButton = document.getElementById("logoutButton") as HTMLElement;
-
-// Event listeners
-settingsButton.addEventListener("click", toggleSettings);
-username.addEventListener("click", editUsername);
-logoutButton.addEventListener("click", logout);
 
 // Toggle settings panel visibility
 function toggleSettings(): void {

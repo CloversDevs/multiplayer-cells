@@ -8,6 +8,7 @@ export class NakamaOpCode {
 }
 
 const RPC_ID_HEALTHCHECK:string = "healthcheck";
+const RPC_ID_FINDMATCH:string = "findmatch";
 
 export function sanitizeString(text: string, maxLength: number = 10): string {
     return text
@@ -102,6 +103,10 @@ export class myNakama
         console.info(`★ ★ ★ ★ ★ CONNECTED TO MATCH ★ id:'${this.match.match_id}'`);
     }
 
+    async createAuthMatch():Promise<void> {
+        this.match = await this.socket.createMatch();
+    }
+
     // Send a priority message.
     async forceSendMatchMessage(opcode:number, obj:any):Promise<void> {
         if(!this.socket || !this.match) return;
@@ -120,11 +125,31 @@ export class myNakama
         this.sendingMatchState = false;
     }
 
-    async rpcHealthCheck() : Promise<object>
+    async rpcHealthCheck() : Promise<HealthCheckResponse>
     {
         console.log("heath check")
         const response = await this.client.rpc(this.session, RPC_ID_HEALTHCHECK, {});
         console.log(response);
-        return response.payload;
+        return response.payload as HealthCheckResponse;
     }
+
+    async rpcFindMatch() : Promise<FindMatchResponse>
+    {
+        console.log("find match")
+        const response = await this.client.rpc(this.session, RPC_ID_FINDMATCH, {});
+        console.log(response);
+        return response.payload as FindMatchResponse;
+    }
+}
+
+class HealthCheckResponse
+{
+    public id:string;
+    public success:boolean;
+}
+
+class FindMatchResponse
+{
+    public id:string;
+    public success:boolean;
 }

@@ -259,7 +259,7 @@ function editUsername(): void {
 
 // Log out function
 function logout(): void {
-    localStorage.removeItem(DEVICE_ID_STORAGE_KEY);
+    nk.deleteLocalData()
     localStorage.removeItem(USER_COLOR_STORAGE_KEY);
     window.location.reload();
 }
@@ -283,51 +283,15 @@ let nk:myNakama = null;
 let matchController:MatchController = null;
 const matchRenderer:MyMatchRenderer = new MyMatchRenderer(canvasId);
 
-const DEVICE_ID_STORAGE_KEY = "deviceID";
 const NAKAMA_PUBLIC_KEY = NAKAMA_SOCKET_SERVER_KEY;
 const NAKAMA_URL = window.location.hostname;
 const NAKAMA_PORT = "7350";
 const NAKAMA_USE_SSL = false;
 
-const generateUUID = ():string => {
-    try
-    {
-        return crypto.randomUUID();
-    }
-    catch
-    {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            let r = (Math.random() * 16) | 0,
-                v = c === 'x' ? r : (r & 0x3) | 0x8;
-            return v.toString(16);
-        });
-    }
-};
-
 async function Start():Promise<void> {
-    let firstLogIn:boolean = false;
-
-    // Generate a new user ID if none exists
-    const getOrCreateDeviceId = ():string=> {
-        let deviceId = localStorage.getItem(DEVICE_ID_STORAGE_KEY);
-        if (!deviceId) {
-            firstLogIn = true;
-            deviceId = generateUUID();
-            console.info(`[BOOT] Generate new device id: '${deviceId}'`);
-            localStorage.setItem(DEVICE_ID_STORAGE_KEY, deviceId);
-            return deviceId;
-        }
-        console.info(`[BOOT] Load existing device id: '${deviceId}'`);
-        return deviceId;
-    }
-    let deviceId = getOrCreateDeviceId();
 
     nk = new myNakama();
-    await nk.connect(deviceId, NAKAMA_URL, NAKAMA_PUBLIC_KEY, NAKAMA_PORT, NAKAMA_USE_SSL);
-    if(firstLogIn)
-    {
-        await nk.setDisplayName("anonymous");
-    }
+    await nk.connectWithDeviceId(NAKAMA_URL, NAKAMA_PUBLIC_KEY, NAKAMA_PORT, NAKAMA_USE_SSL);
     await nk.createMatch("TestMatch");
     matchController = new MatchController(nk);
     matchController.StartMatch();

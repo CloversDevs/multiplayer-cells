@@ -1,3 +1,4 @@
+// Adds or removes the 'hidden' css tag on screens (<div> ids) provided by id when calling showScreen to select one of them
 export class ScreenManager {
     screens: Record<string, HTMLElement>;
 

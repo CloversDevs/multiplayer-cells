@@ -34,6 +34,36 @@ export function getFromQuery(id:string): string | null {
     return urlParams.get(id);
 }
 
+
+const generateUUID = ():string => {
+    try
+    {
+        return crypto.randomUUID();
+    }
+    catch
+    {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            let r = (Math.random() * 16) | 0,
+                v = c === 'x' ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        });
+    }
+};
+
+const DEVICE_ID_STORAGE_KEY = "deviceID";
+// Generate a new user ID if none exists
+const getOrCreateDeviceId = ():string => {
+    let deviceId = localStorage.getItem(DEVICE_ID_STORAGE_KEY);
+    if (!deviceId) {
+        deviceId = generateUUID();
+        console.info(`[BOOT] Generate new device id: '${deviceId}'`);
+        localStorage.setItem(DEVICE_ID_STORAGE_KEY, deviceId);
+        return deviceId;
+    }
+    console.info(`[BOOT] Load existing device id: '${deviceId}'`);
+    return deviceId;
+}
+
 export class myNakama
 {
     session: Session = null;
@@ -45,6 +75,13 @@ export class myNakama
     public onMatchData:EventHandler<MatchData> = new EventHandler<MatchData>();
     public onMatchPresenceEvent:EventHandler<MatchPresenceEvent> = new EventHandler<MatchPresenceEvent>();
     public onAccountUpdated:EventHandler<ApiAccount> = new EventHandler<ApiAccount>();
+    
+    public async connectWithDeviceId(url:string, key:string, port:string, useSsl:boolean) : Promise<void>
+    {
+        let deviceId = getOrCreateDeviceId();
+        return this.connect(deviceId, url, key, port, useSsl);
+        //await this.setDisplayName("anonymous");
+    }
 
     public async connect(deviceId:string, url:string, key:string, port:string, useSsl:boolean) : Promise<void>
     {
@@ -69,6 +106,11 @@ export class myNakama
         console.info("[NAKAMA] Register events...");
         this.socket.onmatchdata = this.onMatchData.invoke;
         this.socket.onmatchpresence = this.onMatchPresenceEvent.invoke;
+    }
+
+    public deleteLocalData() 
+    {
+        localStorage.removeItem(DEVICE_ID_STORAGE_KEY);
     }
 
     async setDisplayName(newDisplayName:string):Promise<void> {
